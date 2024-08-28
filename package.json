@@ -25,14 +25,14 @@
   },
   "scripts": {
     "bundle": "pnpm run format:write && pnpm run package",
-    "ci-test": "pnpx jest",
+    "ci-test": "jest",
     "coverage": "pnpx make-coverage-badge --output-path ./badges/coverage.svg",
-    "format:write": "pnpx prettier --write .",
-    "format:check": "pnpx prettier --check .",
-    "lint": "pnpx eslint . -c ./.github/linters/.eslintrc.yml",
+    "format:write": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . -c ./.github/linters/.eslintrc.yml",
     "package": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
     "package:watch": "npm run package -- --watch",
-    "test": "pnpx jest",
+    "test": "jest",
     "all": "pnpm run format:write && pnpm run lint && pnpm run test && pnpm run coverage && pnpm run package"
   },
   "license": "MIT",
@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@stylistic/eslint-plugin": "2.6.4",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.5.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
