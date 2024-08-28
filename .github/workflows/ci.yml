@@ -38,13 +38,9 @@ jobs:
         id: npm-ci
         run: pnpm i --frozen-lockfile
 
-      - name: Check Format
+      - name: Static analysis
         id: npm-format-check
-        run: pnpm format:check
-
-      - name: Lint
-        id: npm-lint
-        run: pnpm lint
+        run: pnpm check
 
       - name: Test
         id: npm-ci-test
