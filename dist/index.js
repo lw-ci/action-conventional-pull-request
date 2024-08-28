@@ -24972,7 +24972,7 @@ async function run() {
         core.debug(`Waiting ${ms} milliseconds ...`);
         // Log the current timestamp, wait, then log the new timestamp
         core.debug(new Date().toTimeString());
-        await (0, wait_1.wait)(parseInt(ms, 10));
+        await (0, wait_1.wait)(Number.parseInt(ms, 10));
         core.debug(new Date().toTimeString());
         // Set outputs for other workflow steps to use
         core.setOutput('time', new Date().toTimeString());
@@ -25001,7 +25001,7 @@ exports.wait = wait;
  */
 async function wait(milliseconds) {
     return new Promise(resolve => {
-        if (isNaN(milliseconds)) {
+        if (Number.isNaN(milliseconds)) {
             throw new Error('milliseconds not a number');
         }
         setTimeout(() => resolve('done!'), milliseconds);
