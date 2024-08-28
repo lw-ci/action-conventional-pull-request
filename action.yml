@@ -1,11 +1,11 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Conventional pull request (commitlint)'
+description: 'lint commit title to confirm to conventional standards'
+author: 'Layton Whiteley'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
   icon: 'heart'
-  color: 'red'
+  color: 'green'
 
 # Define your inputs here.
 inputs:
