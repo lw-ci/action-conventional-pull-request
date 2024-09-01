@@ -55,6 +55,7 @@ The action works without configuration, however you can provide options for cust
 
 Please see the useful links of commitlint to understand how to configure/override rules:
 
+- https://commitlint.js.org/reference/rules.html
 - https://commitlint.js.org/reference/configuration.html#configuration-object-example
 - https://commitlint.js.org/reference/rules-configuration.html
 - https://commitlint.js.org/concepts/commit-conventions.html
@@ -79,12 +80,40 @@ with:
     ignore-title-validation
 ```
 
+## Custom commitlint rules
+
+This action adds custom commitlint rules that can be overriden as well
+
+```js
+{
+  rules: {
+      /**
+       * This rule checks if the commit subject starts with the commit type.
+       *
+       * Samples:
+       * Invalid => fix: fix something
+       * Correct => fix: something
+       */
+      'duplicate-type-subject-start': [2, 'always'],
+
+      /**
+       * This rule checks if the commit type is duplicated.
+       *
+       * Samples:
+       * Invalid => fix: fix: fix something
+       * Correct => fix: something
+       */
+      'duplicate-commit-type': [2, 'always']
+   }
+}
+```
+
 ## Event triggers
 
 There are two events that can be used as triggers for this action, each with different characteristics:
 
-1. [`pull_request_target`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target): This allows the action to be used in a fork-based workflow, where e.g. you want to accept pull requests in a public repository. In this case, the configuration from the main branch of your repository will be used for the check. This means that you need to have this configuration in the main branch for the action to run at all (e.g. it won't run within a PR that adds the action initially). Also if you change the configuration in a PR, the changes will not be reflected for the current PR – only subsequent ones after the changes are in the main branch.
-2. [`pull_request`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request): This configuration uses the latest configuration that is available in the current branch. It will only work if the branch is based in the repository itself. If this configuration is used and a pull request from a fork is opened, you'll encounter an error as the GitHub token environment parameter is not available. This option is viable if all contributors have write access to the repository.
+1. [`pull_request_target`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target)
+2. [`pull_request`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request)
 
 ## Outputs
 

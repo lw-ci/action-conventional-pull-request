@@ -73,6 +73,8 @@ export async function lintTitle(
   const report = await lint(
     input,
     {
+      'duplicate-type-subject-start': [2, 'always'],
+      'duplicate-commit-type': [2, 'always'],
       ...opts.rules,
     },
     lintOptions,
