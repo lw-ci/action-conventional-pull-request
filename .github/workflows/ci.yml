@@ -21,30 +21,21 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
-        id: pnpm-install
-        with:
-          version: 9
-          run_install: false
-
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
+      - name: Setup bun
+        id: setup-bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
-        id: npm-ci
-        run: pnpm i --frozen-lockfile
+        id: bun-ci
+        run: bun install
 
       - name: Static analysis
-        id: npm-format-check
-        run: pnpm check
+        id: bun-format-check
+        run: bun check
 
       - name: Test
-        id: npm-ci-test
-        run: pnpm ci-test
+        id: bun-ci-test
+        run: bun ci-test
 
   test-action:
     name: GitHub Actions Test

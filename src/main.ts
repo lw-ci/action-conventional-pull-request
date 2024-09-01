@@ -14,6 +14,11 @@ export async function run(): Promise<void> {
     const githubToken = process.env.GITHUB_TOKEN ?? '';
     const ms: string = core.getInput('milliseconds');
 
+    const report1 = await lintTitle({ input: 'feat(core)!: feat test' });
+
+    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
+    core.info(JSON.stringify(report1, null, 2));
+
     const client = github.getOctokit(githubToken, {
       baseUrl: githubBaseUrl
     });
@@ -37,7 +42,7 @@ export async function run(): Promise<void> {
       pull_number: contextPullRequest.number
     });
 
-    const report = lintTitle({ input: pullRequest.title });
+    const report = await lintTitle({ input: pullRequest.title });
 
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
     core.info(JSON.stringify(report, null, 2));

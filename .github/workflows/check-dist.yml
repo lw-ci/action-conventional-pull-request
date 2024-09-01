@@ -30,26 +30,17 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
-        id: pnpm-install
-        with:
-          version: 9
-          run_install: false
-
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
+      - name: Setup bun
+        id: setup-bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
         id: install
-        run: pnpm i --frozen-lockfile
+        run: bun install
 
       - name: Build dist/ Directory
         id: build
-        run: pnpm run bundle
+        run: bun run bundle
 
       # This will fail the workflow if the `dist/` directory is different than
       # expected.

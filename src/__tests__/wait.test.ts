@@ -2,7 +2,7 @@
  * Unit tests for src/wait.ts
  */
 
-import { expect } from '@jest/globals';
+import { it, describe, expect } from 'bun:test';
 import { wait } from '../wait.js';
 
 describe('wait.ts', () => {

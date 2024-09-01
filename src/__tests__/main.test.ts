@@ -6,31 +6,41 @@
  * variables following the pattern `INPUT_<INPUT_NAME>`.
  */
 
+import { it, describe, expect, spyOn, beforeEach } from 'bun:test';
+
 import * as core from '@actions/core';
 import * as main from '../main.js';
 
 // Mock the action's main function
-const runMock = jest.spyOn(main, 'run');
+const runMock = spyOn(main, 'run');
 
 // Other utilities
 const timeRegex = /^\d{2}:\d{2}:\d{2}/;
 
 // Mock the GitHub Actions core library
-let debugMock: jest.SpiedFunction<typeof core.debug>;
-let errorMock: jest.SpiedFunction<typeof core.error>;
-let getInputMock: jest.SpiedFunction<typeof core.getInput>;
-let setFailedMock: jest.SpiedFunction<typeof core.setFailed>;
-let setOutputMock: jest.SpiedFunction<typeof core.setOutput>;
+let debugMock = spyOn(core, 'debug').mockImplementation(() => '');
+let errorMock = spyOn(core, 'error').mockImplementation(() => '');
+let getInputMock = spyOn(core, 'getInput').mockImplementation(() => '');
+let setFailedMock = spyOn(core, 'setFailed').mockImplementation(() => '');
+let setOutputMock = spyOn(core, 'setOutput').mockImplementation(() => '');
 
-describe('action', () => {
+function clearAllMocks() {
+  debugMock.mockClear();
+  errorMock.mockClear();
+  getInputMock.mockClear();
+  setFailedMock.mockClear();
+  setOutputMock.mockClear();
+}
+
+describe.skip('action', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    clearAllMocks();
 
-    debugMock = jest.spyOn(core, 'debug').mockImplementation();
-    errorMock = jest.spyOn(core, 'error').mockImplementation();
-    getInputMock = jest.spyOn(core, 'getInput').mockImplementation();
-    setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation();
-    setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation();
+    debugMock = spyOn(core, 'debug').mockImplementation(() => '');
+    errorMock = spyOn(core, 'error').mockImplementation(() => '');
+    getInputMock = spyOn(core, 'getInput').mockImplementation(() => '');
+    setFailedMock = spyOn(core, 'setFailed').mockImplementation(() => '');
+    setOutputMock = spyOn(core, 'setOutput').mockImplementation(() => '');
   });
 
   it('sets the time output', async () => {

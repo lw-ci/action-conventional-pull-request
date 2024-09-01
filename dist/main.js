@@ -11,6 +11,9 @@ export async function run() {
         const githubBaseUrl = process.env.INPUT_GITHUBBASEURL ?? '';
         const githubToken = process.env.GITHUB_TOKEN ?? '';
         const ms = core.getInput('milliseconds');
+        const report1 = await lintTitle({ input: 'feat(core)!: feat test' });
+        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
+        core.info(JSON.stringify(report1, null, 2));
         const client = github.getOctokit(githubToken, {
             baseUrl: githubBaseUrl
         });
@@ -29,7 +32,7 @@ export async function run() {
             repo,
             pull_number: contextPullRequest.number
         });
-        const report = lintTitle({ input: pullRequest.title });
+        const report = await lintTitle({ input: pullRequest.title });
         // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
         core.info(JSON.stringify(report, null, 2));
         // Log the current timestamp, wait, then log the new timestamp
