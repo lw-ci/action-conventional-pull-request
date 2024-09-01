@@ -53,8 +53,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: ./
         with:
-          milliseconds: 2000
+          config_file: './.github/commitlint.js'
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: echo "valid => ${{ steps.test-action.outputs.valid }}"
+      - run: echo "skiiped => ${{ steps.test-action.outputs.skipped }}"
+      - run: echo "number => ${{ steps.test-action.outputs.pr_number }}"
+      - run: echo "title => ${{ steps.test-action.outputs.pr_title }}"
+      - run: echo "report => ${{ steps.test-action.outputs.report }}"
+      - run: echo "outcomes => ${{ steps.test-action.outputs.outcomes }}"
