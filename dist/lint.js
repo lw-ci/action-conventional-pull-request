@@ -52,6 +52,8 @@ export async function lintTitle({ input }, config) {
         parserOpts: opts.parserPreset ? opts.parserPreset.parserOpts : undefined,
     };
     const report = await lint(input, {
+        'duplicate-type-subject-start': [2, 'always'],
+        'duplicate-commit-type': [2, 'always'],
         ...opts.rules,
     }, lintOptions);
     return report;

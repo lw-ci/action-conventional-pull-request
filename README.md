@@ -198,6 +198,8 @@ jobs:
           delete: true
 ````
 
+![sample comment](assets/sample-comment.png)
+
 </details>
 
 Inspired by:
