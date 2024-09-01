@@ -24961,6 +24961,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core = __importStar(__nccwpck_require__(9093));
 const wait_1 = __nccwpck_require__(5722);
+const config = __nccwpck_require__(5262);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -26858,6 +26859,186 @@ function parseParams (str) {
 module.exports = parseParams
 
 
+/***/ }),
+
+/***/ 5262:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
+
+// EXPORTS
+__nccwpck_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ lib)
+});
+
+;// CONCATENATED MODULE: ./node_modules/.pnpm/@commitlint+types@19.0.3/node_modules/@commitlint/types/lib/rules.js
+/**
+ * Rules always have a severity.
+ * Severity indicates what to do if the rule is found to be broken
+ * 0 - Disable this rule
+ * 1 - Warn for violations
+ * 2 - Error for violations
+ */
+var RuleConfigSeverity;
+(function (RuleConfigSeverity) {
+    RuleConfigSeverity[RuleConfigSeverity["Disabled"] = 0] = "Disabled";
+    RuleConfigSeverity[RuleConfigSeverity["Warning"] = 1] = "Warning";
+    RuleConfigSeverity[RuleConfigSeverity["Error"] = 2] = "Error";
+})(RuleConfigSeverity || (RuleConfigSeverity = {}));
+var RuleConfigQuality;
+(function (RuleConfigQuality) {
+    RuleConfigQuality[RuleConfigQuality["User"] = 0] = "User";
+    RuleConfigQuality[RuleConfigQuality["Qualified"] = 1] = "Qualified";
+})(RuleConfigQuality || (RuleConfigQuality = {}));
+//# sourceMappingURL=rules.js.map
+;// CONCATENATED MODULE: ./node_modules/.pnpm/@commitlint+types@19.0.3/node_modules/@commitlint/types/lib/index.js
+
+
+
+
+
+
+
+
+//# sourceMappingURL=index.js.map
+;// CONCATENATED MODULE: ./node_modules/.pnpm/@commitlint+config-conventional@19.2.2/node_modules/@commitlint/config-conventional/lib/index.js
+
+/* harmony default export */ const lib = ({
+    parserPreset: 'conventional-changelog-conventionalcommits',
+    rules: {
+        'body-leading-blank': [RuleConfigSeverity.Warning, 'always'],
+        'body-max-line-length': [RuleConfigSeverity.Error, 'always', 100],
+        'footer-leading-blank': [RuleConfigSeverity.Warning, 'always'],
+        'footer-max-line-length': [
+            RuleConfigSeverity.Error,
+            'always',
+            100,
+        ],
+        'header-max-length': [RuleConfigSeverity.Error, 'always', 100],
+        'header-trim': [RuleConfigSeverity.Error, 'always'],
+        'subject-case': [
+            RuleConfigSeverity.Error,
+            'never',
+            ['sentence-case', 'start-case', 'pascal-case', 'upper-case'],
+        ],
+        'subject-empty': [RuleConfigSeverity.Error, 'never'],
+        'subject-full-stop': [RuleConfigSeverity.Error, 'never', '.'],
+        'type-case': [RuleConfigSeverity.Error, 'always', 'lower-case'],
+        'type-empty': [RuleConfigSeverity.Error, 'never'],
+        'type-enum': [
+            RuleConfigSeverity.Error,
+            'always',
+            [
+                'build',
+                'chore',
+                'ci',
+                'docs',
+                'feat',
+                'fix',
+                'perf',
+                'refactor',
+                'revert',
+                'style',
+                'test',
+            ],
+        ],
+    },
+    prompt: {
+        questions: {
+            type: {
+                description: "Select the type of change that you're committing",
+                enum: {
+                    feat: {
+                        description: 'A new feature',
+                        title: 'Features',
+                        emoji: '✨',
+                    },
+                    fix: {
+                        description: 'A bug fix',
+                        title: 'Bug Fixes',
+                        emoji: '🐛',
+                    },
+                    docs: {
+                        description: 'Documentation only changes',
+                        title: 'Documentation',
+                        emoji: '📚',
+                    },
+                    style: {
+                        description: 'Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)',
+                        title: 'Styles',
+                        emoji: '💎',
+                    },
+                    refactor: {
+                        description: 'A code change that neither fixes a bug nor adds a feature',
+                        title: 'Code Refactoring',
+                        emoji: '📦',
+                    },
+                    perf: {
+                        description: 'A code change that improves performance',
+                        title: 'Performance Improvements',
+                        emoji: '🚀',
+                    },
+                    test: {
+                        description: 'Adding missing tests or correcting existing tests',
+                        title: 'Tests',
+                        emoji: '🚨',
+                    },
+                    build: {
+                        description: 'Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)',
+                        title: 'Builds',
+                        emoji: '🛠',
+                    },
+                    ci: {
+                        description: 'Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)',
+                        title: 'Continuous Integrations',
+                        emoji: '⚙️',
+                    },
+                    chore: {
+                        description: "Other changes that don't modify src or test files",
+                        title: 'Chores',
+                        emoji: '♻️',
+                    },
+                    revert: {
+                        description: 'Reverts a previous commit',
+                        title: 'Reverts',
+                        emoji: '🗑',
+                    },
+                },
+            },
+            scope: {
+                description: 'What is the scope of this change (e.g. component or file name)',
+            },
+            subject: {
+                description: 'Write a short, imperative tense description of the change',
+            },
+            body: {
+                description: 'Provide a longer description of the change',
+            },
+            isBreaking: {
+                description: 'Are there any breaking changes?',
+            },
+            breakingBody: {
+                description: 'A BREAKING CHANGE commit requires a body. Please enter a longer description of the commit itself',
+            },
+            breaking: {
+                description: 'Describe the breaking changes',
+            },
+            isIssueAffected: {
+                description: 'Does this change affect any open issues?',
+            },
+            issuesBody: {
+                description: 'If issues are closed, the commit requires a body. Please enter a longer description of the commit itself',
+            },
+            issues: {
+                description: 'Add issue references (e.g. "fix #123", "re #123".)',
+            },
+        },
+    },
+});
+//# sourceMappingURL=index.js.map
+
 /***/ })
 
 /******/ 	});
@@ -26893,6 +27074,34 @@ module.exports = parseParams
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
@@ -26908,9 +27117,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /**
  * The entrypoint for the action.
  */
-const main_1 = __nccwpck_require__(9356);
+const main_js_1 = __nccwpck_require__(9356);
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-(0, main_1.run)();
+(0, main_js_1.run)();
 
 })();
 

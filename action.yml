@@ -1,5 +1,5 @@
 name: 'Conventional pull request (commitlint)'
-description: 'lint commit title to confirm to conventional standards'
+description: 'lint PR to conform to conventional standards'
 author: 'Layton Whiteley'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
@@ -20,5 +20,5 @@ outputs:
     description: 'Your output description here'
 
 runs:
-  using: node20
-  main: dist/index.js
+  using: 'docker'
+  image: 'Dockerfile'
