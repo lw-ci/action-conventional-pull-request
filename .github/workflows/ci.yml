@@ -2,6 +2,10 @@ name: Continuous Integration
 
 on:
   pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
     branches:
       - main
   push:
@@ -10,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   test-typescript:
@@ -21,30 +26,21 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
-        id: pnpm-install
-        with:
-          version: 9
-          run_install: false
-
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
+      - name: Setup bun
+        id: setup-bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
-        id: npm-ci
-        run: pnpm i --frozen-lockfile
+        id: bun-ci
+        run: bun install
 
       - name: Static analysis
-        id: npm-format-check
-        run: pnpm check
+        id: bun-format-check
+        run: bun check
 
       - name: Test
-        id: npm-ci-test
-        run: pnpm ci-test
+        id: bun-ci-test
+        run: bun ci-test
 
   test-action:
     name: GitHub Actions Test
@@ -57,10 +53,41 @@ jobs:
 
       - name: Test Local Action
         id: test-action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: ./
         with:
-          milliseconds: 2000
+          config_file: './.github/commitlint.js'
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: echo "valid => ${{ steps.test-action.outputs.valid }}"
+      - run: echo "skiiped => ${{ steps.test-action.outputs.skipped }}"
+      - run: echo "number => ${{ steps.test-action.outputs.pr_number }}"
+      - run: echo "title => ${{ steps.test-action.outputs.pr_title }}"
+      - run: echo "report => ${{ steps.test-action.outputs.report }}"
+      - run: echo "outcomes => ${{ steps.test-action.outputs.outcomes }}"
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        # When the previous steps fails, the workflow would stop. By adding this
+        # condition you can continue the execution with the populated error message.
+        if: always() && (steps.test-action.outputs.valid == 'false')
+        with:
+          header: pr-title-lint-error
+          message: |
+            Hey there and thank you for opening this pull request! 👋🏼
+
+            We require pull request titles to follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) and it looks like your proposed title needs to be adjusted.
+
+            Details:
+
+            ```
+            ${{ steps.test-action.outputs.report }}
+            ```
+
+        # Delete a previous comment when the issue has been resolved
+      - if: ${{ steps.test-action.outputs.valid == 'true' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-title-lint-error
+          delete: true
