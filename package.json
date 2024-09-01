@@ -32,7 +32,7 @@
     "package:watch": "npm run package -- --watch",
     "test": "jest",
     "all": "pnpm run format:write && pnpm run lint && pnpm run test && pnpm run coverage && pnpm run package",
-    "start": "node dist/index.js"
+    "start": "tsx src/index.mts"
   },
   "license": "MIT",
   "jest": {
