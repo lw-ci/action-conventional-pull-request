@@ -37,7 +37,13 @@
     "package:watch": "bun run package -- --watch",
     "test": "bun test",
     "all": "bun run format:write && bun run lint && bun run test && bun run coverage && bun run package",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "commit": "git add . && git commit -am 'chore: add dist action'",
+    "push": "git push --follow-tags",
+    "commit:push": "npm run commit && npm run push",
+    "release:patch": "npm version patch && npm run push",
+    "release:minor": "npm version minor && npm run push",
+    "release:major": "npm version major && npm run push"
   },
   "license": "MIT",
   "dependencies": {
