@@ -62,7 +62,7 @@ Please see the useful links of commitlint to understand how to configure/overrid
 
 ```yml
 with:
-  # Configure which types are allowed (newline-delimited).
+  # Configure a shared type to use as the base config
   # Default: @commitlint/config-conventional
   # Allowed:
   # - @commitlint/config-conventional
@@ -74,7 +74,8 @@ with:
   # Example: ./.github/commitlint.js
   config_file: ''
 
-  # Configure a list of pull request labels where if found will disable PR Title validation
+  # Configure a list of pull request labels where if found
+  # will disable PR Title validation (newline-delimited).
   ignore_labels: |
     bot
     ignore-title-validation
