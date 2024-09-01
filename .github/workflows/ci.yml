@@ -48,6 +48,8 @@ jobs:
 
       - name: Test Local Action
         id: test-action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: ./
         with:
           milliseconds: 2000
