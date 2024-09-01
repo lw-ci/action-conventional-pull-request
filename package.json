@@ -28,7 +28,7 @@
     "lint": "pnpm biome lint .",
     "check": "pnpm biome check .",
     "check:write": "pnpm biome check --write .",
-    "package": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
+    "package": "ncc build src/index.mts -o dist --source-map --license licenses.txt",
     "package:watch": "npm run package -- --watch",
     "test": "jest",
     "all": "pnpm run format:write && pnpm run lint && pnpm run test && pnpm run coverage && pnpm run package",

@@ -2,9 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "ES2022",
-    "module": "Preserve",
+    "module": "NodeNext",
     "rootDir": "./src",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "NodeNext",
     "baseUrl": "./",
     "sourceMap": true,
     "outDir": "./dist",
@@ -15,5 +15,5 @@
     "skipLibCheck": true,
     "newLine": "lf"
   },
-  "exclude": ["./dist", "./node_modules", "./__tests__", "./coverage"]
+  "exclude": ["./dist", "./node_modules", "**/__tests__", "./coverage"]
 }

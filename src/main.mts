@@ -1,12 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-import { wait } from './wait';
-import { lintTitle } from './lint';
-
-const baseConfigs = {
-  '@commitlint/config-conventional': require('@commitlint/config-conventional')
-};
+import { wait } from './wait.mjs';
+import { lintTitle } from './lint.mjs';
 
 /**
  * The main function for the action.
