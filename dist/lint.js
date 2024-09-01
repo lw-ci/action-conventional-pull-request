@@ -1,5 +1,6 @@
 import load from '@commitlint/load';
 import lint from '@commitlint/lint';
+import format from '@commitlint/format';
 function countOccurrences(inputString, targetSubstring) {
     if (!inputString || !targetSubstring)
         return 0;
@@ -7,11 +8,12 @@ function countOccurrences(inputString, targetSubstring) {
     const matches = inputString.match(regex);
     return matches ? matches.length : 0;
 }
-export async function lintTitle({ input }) {
+export async function lintTitle({ input }, config) {
     const CONFIG = {
-        extends: ['@commitlint/config-conventional']
+        extends: [config.baseConfig, config.configFile].filter(Boolean),
     };
     const opts = await load(CONFIG);
+    const customPlugins = opts.plugins ?? {};
     const lintOptions = {
         plugins: {
             'actions-conventional-pull-request': {
@@ -23,12 +25,12 @@ export async function lintTitle({ input }) {
                      * Invalid => fix: fix something
                      * Correct => fix: something
                      */
-                    'duplicate-type-subject-start': props => {
+                    'duplicate-type-subject-start': (props) => {
                         const { subject, type } = props;
                         const [startingWord] = subject ? subject.split(' ') : [];
                         return [
-                            startingWord?.trim() !== type,
-                            'Should not start subject with the commit type'
+                            startingWord?.trim()?.toLowerCase() !== type?.toLowerCase(),
+                            'Should not start subject with the commit type',
                         ];
                     },
                     /**
@@ -38,34 +40,34 @@ export async function lintTitle({ input }) {
                      * Invalid => fix: fix: fix something
                      * Correct => fix: something
                      */
-                    'duplicate-commit-type': props => {
+                    'duplicate-commit-type': (props) => {
                         const { type, header } = props;
                         const occurrences = countOccurrences(header?.toString() ?? '', `${type}:`);
                         return [occurrences < 2, 'Should not duplicate the commit type'];
-                    }
-                }
-            }
+                    },
+                },
+            },
+            ...customPlugins,
         },
-        parserOpts: opts.parserPreset ? opts.parserPreset.parserOpts : undefined
+        parserOpts: opts.parserPreset ? opts.parserPreset.parserOpts : undefined,
     };
     const report = await lint(input, {
         ...opts.rules,
-        'body-leading-blank': [2, 'always'],
-        'footer-leading-blank': [1, 'always'],
-        'header-max-length': [2, 'always', 100],
-        'subject-case': [
-            2,
-            'never',
-            ['sentence-case', 'start-case', 'pascal-case', 'upper-case']
-        ],
-        'subject-empty': [2, 'never'],
-        'subject-full-stop': [2, 'never', '.'],
-        'type-case': [2, 'always', 'lower-case'],
-        'type-empty': [2, 'never'],
-        'scope-case': [2, 'always', 'lower-case'],
-        'duplicate-type-subject-start': [2, 'always'],
-        'duplicate-commit-type': [2, 'always']
     }, lintOptions);
     return report;
+}
+export async function convertLintOutcomesToReportResults(outcomes) {
+    return outcomes.map((outcome) => {
+        return {
+            errors: outcome.errors,
+            warnings: outcome.warnings,
+            input: outcome.input,
+        };
+    });
+}
+export async function formatReport(reportResults) {
+    return format({
+        results: reportResults,
+    });
 }
 //# sourceMappingURL=lint.js.map

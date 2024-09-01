@@ -1,235 +1,176 @@
-# Create a GitHub Action Using TypeScript
+# action-conventional-pull-request
 
-[![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
-[![Check dist/](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
-[![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
+This is a GitHub Action that ensures that your pull request titles match the [Conventional Commits spec](https://www.conventionalcommits.org/). Typically, this is used in combination with a tool like [semantic-release](https://github.com/semantic-release/semantic-release) to automate releases.
 
-Use this template to bootstrap the creation of a TypeScript action. :rocket:
+This action uses [commitlint](https://commitlint.js.org/) to parse and validate PR titles
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
+## Examples
 
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
+**Valid pull request titles:**
 
-## Create Your Own Action
+- fix: Correct typo
+- feat: Add support for Node.js 18
+- refactor!: Drop support for Node.js 12
+- feat(ui): Add `Button` component
 
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
+> Note that since pull request titles only have a single line, you have to use `!` to indicate breaking changes.
 
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
+See [Conventional Commits](https://www.conventionalcommits.org/) for more examples.
 
-> [!IMPORTANT]
->
-> Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
-> details on how to use this file, see
-> [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
+## Installation
 
-## Initial Setup
+1. If your goal is to create squashed commits that will be used for automated releases, you'll want to configure your GitHub repository to [use the squash & merge strategy](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/configuring-commit-squashing-for-pull-requests) and tick the option "Default to PR title for squash merge commits".
+2. [Add the action](https://docs.github.com/en/actions/quickstart) with the following configuration:
 
-After you've cloned the repository to your local machine or codespace, you'll
-need to perform some initial setup steps before you can develop your action.
+```yml
+name: 'Lint PR'
 
-> [!NOTE]
->
-> You'll need to have a reasonably modern version of
-> [Node.js](https://nodejs.org) handy (20.x or later should work!). If you are
-> using a version manager like [`nodenv`](https://github.com/nodenv/nodenv) or
-> [`nvm`](https://github.com/nvm-sh/nvm), this template has a `.node-version`
-> file at the root of the repository that will be used to automatically switch
-> to the correct version when you `cd` into the repository. Additionally, this
-> `.node-version` file is used by GitHub Actions in any `actions/setup-node`
-> actions.
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
 
-1. :hammer_and_wrench: Install the dependencies
+permissions:
+  contents: read
+  pull-requests: write
 
-   ```bash
-   npm install
-   ```
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lwhiteley/action-conventional-pull-request@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
 
-1. :building_construction: Package the TypeScript for distribution
+See the [event triggers documentation](#event-triggers) below to learn more about what `pull_request_target` means.
 
-   ```bash
-   npm run bundle
-   ```
+## Configuration
 
-1. :white_check_mark: Run the tests
+The action works without configuration, however you can provide options for customization.
 
-   ```bash
-   $ npm test
+Please see the useful links of commitlint to understand how to configure/override rules:
 
-   PASS  ./index.test.js
-     ✓ throws invalid number (3ms)
-     ✓ wait 500 ms (504ms)
-     ✓ test runs (95ms)
+- https://commitlint.js.org/reference/configuration.html#configuration-object-example
+- https://commitlint.js.org/reference/rules-configuration.html
+- https://commitlint.js.org/concepts/commit-conventions.html
 
-   ...
-   ```
+```yml
+with:
+  # Configure which types are allowed (newline-delimited).
+  # Default: @commitlint/config-conventional
+  # Allowed:
+  # - @commitlint/config-conventional
+  base_config: '@commitlint/config-conventional'
 
-## Update the Action Metadata
+  # Configure path to a custom commitlint javascript config file within the repository
+  # This config will be loaded last and take the highest priority.
+  # This file must export a commitlint config as the default export
+  # Example: ./.github/commitlint.js
+  config_file: ''
 
-The [`action.yml`](action.yml) file defines metadata about your action, such as
-input(s) and output(s). For details about this file, see
-[Metadata syntax for GitHub Actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions).
+  # Configure a list of pull request labels where if found will disable PR Title validation
+  ignore_labels: |
+    bot
+    ignore-title-validation
+```
 
-When you copy this repository, update `action.yml` with the name, description,
-inputs, and outputs for your action.
+## Event triggers
 
-## Update the Action Code
+There are two events that can be used as triggers for this action, each with different characteristics:
 
-The [`src/`](./src/) directory is the heart of your action! This contains the
-source code that will be run when your action is invoked. You can replace the
-contents of this directory with your own code.
+1. [`pull_request_target`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target): This allows the action to be used in a fork-based workflow, where e.g. you want to accept pull requests in a public repository. In this case, the configuration from the main branch of your repository will be used for the check. This means that you need to have this configuration in the main branch for the action to run at all (e.g. it won't run within a PR that adds the action initially). Also if you change the configuration in a PR, the changes will not be reflected for the current PR – only subsequent ones after the changes are in the main branch.
+2. [`pull_request`](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request): This configuration uses the latest configuration that is available in the current branch. It will only work if the branch is based in the repository itself. If this configuration is used and a pull request from a fork is opened, you'll encounter an error as the GitHub token environment parameter is not available. This option is viable if all contributors have write access to the repository.
 
-There are a few things to keep in mind when writing your action code:
+## Outputs
 
-- Most GitHub Actions toolkit and CI/CD operations are processed asynchronously.
-  In `main.ts`, you will see that the action is run in an `async` function.
+- `valid` - boolean as string to determine if the title is valid or not
+- `skipped` - boolean as string to determine if validation was skipped or not
+- `outcomes` - structured `Array<Outcome>` as JSON string of the validation feedback
 
-  ```javascript
-  import * as core from '@actions/core';
-  //...
+  ```ts
+  type Problem = {
+    // Level of the problem hint | warning | error
+    level: 0 | 1 | 2;
 
-  async function run() {
-    try {
-      //...
-    } catch (error) {
-      core.setFailed(error.message);
-    }
-  }
+    // Name of the problem to annotate the message with
+    name: string;
+
+    // Message to print
+    message: string;
+  };
+
+  type Outcome = {
+    input: string;
+    errors: Problem[];
+    warnings: Problem[];
+  };
   ```
 
-  For more information about the GitHub Actions toolkit, see the
-  [documentation](https://github.com/actions/toolkit/blob/master/README.md).
+- `report` - The formatted report of the validation
+- `pr_title` - The title of the pull request
+- `pr_number`: The pull request number
 
-So, what are you waiting for? Go ahead and start customizing your action!
+[Outputs can be used in other steps](https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs), for example to comment the error message onto the pull request.
 
-1. Create a new branch
+<details>
+<summary>Example</summary>
 
-   ```bash
-   git checkout -b releases/v1
-   ```
+````yml
+name: 'Lint PR'
 
-1. Replace the contents of `src/` with your action code
-1. Add tests to `__tests__/` for your source code
-1. Format, test, and build the action
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
 
-   ```bash
-   npm run all
-   ```
+permissions:
+  contents: read
+  pull-requests: write
 
-   > This step is important! It will run [`ncc`](https://github.com/vercel/ncc)
-   > to build the final JavaScript action code with all dependencies included.
-   > If you do not run this step, your action will not work correctly when it is
-   > used in a workflow. This step also includes the `--license` option for
-   > `ncc`, which will create a license file for all of the production node
-   > modules used in your project.
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lwhiteley/action-conventional-pull-request@v1
+        id: lint_pr_title
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-1. Commit your changes
+      - uses: marocchino/sticky-pull-request-comment@v2
+        # When the previous steps fails, the workflow would stop. By adding this
+        # condition you can continue the execution with the populated error message.
+        if: always() && (steps.lint_pr_title.outputs.valid == false)
+        with:
+          header: pr-title-lint-error
+          message: |
+            Hey there and thank you for opening this pull request! 👋🏼
 
-   ```bash
-   git add .
-   git commit -m "My first action is ready!"
-   ```
+            We require pull request titles to follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) and it looks like your proposed title needs to be adjusted.
 
-1. Push them to your repository
+            Details:
 
-   ```bash
-   git push -u origin releases/v1
-   ```
+            ```
+            ${{ steps.lint_pr_title.outputs.report }}
+            ```
 
-1. Create a pull request and get feedback on your action
-1. Merge the pull request into the `main` branch
+      # Delete a previous comment when the issue has been resolved
+      - if: ${{ steps.lint_pr_title.outputs.error_message == true }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-title-lint-error
+          delete: true
+````
 
-Your action is now published! :rocket:
+</details>
 
-For information about versioning your action, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
+Inspired by:
 
-## Validate the Action
-
-You can now validate the action by referencing it in a workflow file. For
-example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
-action in the same repository.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Test Local Action
-    id: test-action
-    uses: ./
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
-```
-
-For example workflow runs, check out the
-[Actions tab](https://github.com/actions/typescript-action/actions)! :rocket:
-
-## Usage
-
-After testing, you can create version tag(s) that developers can use to
-reference different stable versions of your action. For more information, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-To include the action in a workflow in another repository, you can use the
-`uses` syntax with the `@` symbol to reference a specific branch, tag, or commit
-hash.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Test Local Action
-    id: test-action
-    uses: actions/typescript-action@v1 # Commit with the `v1` tag
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
-```
-
-## Publishing a New Release
-
-This project includes a helper script, [`script/release`](./script/release)
-designed to streamline the process of tagging and pushing new releases for
-GitHub Actions.
-
-GitHub Actions allows users to select a specific version of the action to use,
-based on release tags. This script simplifies this process by performing the
-following steps:
-
-1. **Retrieving the latest release tag:** The script starts by fetching the most
-   recent SemVer release tag of the current branch, by looking at the local data
-   available in your repository.
-1. **Prompting for a new release tag:** The user is then prompted to enter a new
-   release tag. To assist with this, the script displays the tag retrieved in
-   the previous step, and validates the format of the inputted tag (vX.X.X). The
-   user is also reminded to update the version field in package.json.
-1. **Tagging the new release:** The script then tags a new release and syncs the
-   separate major tag (e.g. v1, v2) with the new release tag (e.g. v1.0.0,
-   v2.1.2). When the user is creating a new major release, the script
-   auto-detects this and creates a `releases/v#` branch for the previous major
-   version.
-1. **Pushing changes to remote:** Finally, the script pushes the necessary
-   commits, tags and branches to the remote repository. From here, you will need
-   to create a new release in GitHub so users can easily reference the new tags
-   in their workflows.
+- https://github.com/amannn/action-semantic-pull-request

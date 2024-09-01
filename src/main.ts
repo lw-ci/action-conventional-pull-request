@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-import { wait } from './wait.js';
-import { lintTitle } from './lint.js';
+import { formatReport, lintTitle } from './lint.js';
+import { parseConfig } from './helpers.js';
 
 /**
  * The main function for the action.
@@ -10,50 +10,63 @@ import { lintTitle } from './lint.js';
  */
 export async function run(): Promise<void> {
   try {
-    const githubBaseUrl = process.env.INPUT_GITHUBBASEURL ?? '';
-    const githubToken = process.env.GITHUB_TOKEN ?? '';
-    const ms: string = core.getInput('milliseconds');
+    const config = parseConfig();
+    const { githubToken, ignoreLabels } = config;
 
-    const report1 = await lintTitle({ input: 'feat(core)!: feat test' });
+    const client = github.getOctokit(githubToken);
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.info(JSON.stringify(report1, null, 2));
-
-    const client = github.getOctokit(githubToken, {
-      baseUrl: githubBaseUrl
-    });
-
-    const contextPullRequest = github.context.payload.pull_request;
-    if (!contextPullRequest) {
+    const prContext = github.context.payload.pull_request;
+    if (!prContext) {
       throw new Error(
-        "This action can only be invoked in `pull_request_target` or `pull_request` events. Otherwise the pull request can't be inferred."
+        '`pull_request_target` or `pull_request` events are required to execute this action.',
       );
     }
 
-    const owner = contextPullRequest.base.user.login;
-    const repo = contextPullRequest.base.repo.name;
-    // The pull request info on the context isn't up to date. When
-    // the user updates the title and re-runs the workflow, it would
-    // be outdated. Therefore fetch the pull request via the REST API
-    // to ensure we use the current title.
+    const owner = prContext.base.user.login;
+    const repo = prContext.base.repo.name;
+
     const { data: pullRequest } = await client.rest.pulls.get({
       owner,
       repo,
-      pull_number: contextPullRequest.number
+      pull_number: prContext.number,
     });
 
-    const report = await lintTitle({ input: pullRequest.title });
+    core.setOutput('skipped', 'true');
+    core.setOutput('valid', 'true');
+    core.setOutput('pr_title', pullRequest.title);
+    core.setOutput('pr_number', pullRequest.number.toString());
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.info(JSON.stringify(report, null, 2));
+    if (ignoreLabels) {
+      const labelNames = pullRequest.labels.map((label) => label.name);
+      for (const labelName of labelNames) {
+        if (ignoreLabels.includes(labelName)) {
+          core.info(
+            `Validation was skipped because the PR label "${labelName}" was found.`,
+          );
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString());
-    await wait(Number.parseInt(ms, 10));
-    core.debug(new Date().toTimeString());
+          return;
+        }
+      }
+    }
+    const report = await lintTitle({ input: pullRequest.title }, config);
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString());
+    const outcomes = [report];
+
+    const formattedReport = await formatReport(outcomes);
+
+    core.debug(JSON.stringify(report, null, 2));
+    core.info(formattedReport);
+
+    core.setOutput('skipped', 'false');
+    core.setOutput('valid', report.valid.toString());
+    core.setOutput('outcomes', JSON.stringify(outcomes));
+    core.setOutput('report', formattedReport);
+
+    if (!report.valid) {
+      throw new Error(
+        `The following pull request title failed validation: "${report.input}"`,
+      );
+    }
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message);

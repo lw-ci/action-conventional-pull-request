@@ -1,23 +1,38 @@
 name: 'Conventional pull request (commitlint)'
-description: 'lint commit title to confirm to conventional standards'
+description: 'lint commit title to conform to conventional standards'
 author: 'Layton Whiteley'
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
   icon: 'heart'
   color: 'green'
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
-    required: true
-    default: '1000'
+  base_config:
+    description: 'A supported shareable commitlint config'
+    required: false
+    default: '@commitlint/config-conventional'
+  config_file:
+    description: 'Path to a commitlint config file in the repository'
+    required: false
+    default: ''
+  ignore_labels:
+    description: 'a list of labels used to ignore validation'
+    required: false
+    default: ''
 
-# Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  valid:
+    description: 'Boolean as string with response if the process was valid or not'
+  skipped:
+    description: 'Boolean as string with response if the process was skipped or not'
+  outcomes:
+    description: 'JSON array as string for the detailed outcomes of the validation '
+  report:
+    description: 'Formatted string of the report'
+  pr_title:
+    description: 'The title of the pull request operated on'
+  pr_number:
+    description: 'The pull request number'
 
 runs:
   using: node20
