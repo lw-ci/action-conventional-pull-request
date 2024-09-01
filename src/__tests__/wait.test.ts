@@ -3,7 +3,7 @@
  */
 
 import { expect } from '@jest/globals';
-import { wait } from '../wait.mjs';
+import { wait } from '../wait.js';
 
 describe('wait.ts', () => {
   it('throws an invalid number', async () => {

@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-import { wait } from './wait.mjs';
-import { lintTitle } from './lint.mjs';
+import { wait } from './wait.js';
+import { lintTitle } from './lint.js';
 
 /**
  * The main function for the action.

@@ -2,6 +2,7 @@
   "name": "typescript-action",
   "description": "GitHub Actions TypeScript template",
   "version": "0.0.0",
+  "type": "module",
   "author": "",
   "private": true,
   "homepage": "https://github.com/actions/typescript-action",
@@ -28,11 +29,11 @@
     "lint": "pnpm biome lint .",
     "check": "pnpm biome check .",
     "check:write": "pnpm biome check --write .",
-    "package": "ncc build src/index.mts -o dist --source-map --license licenses.txt",
+    "package": "ncc build src/index.ts -o dist --source-map --license licenses.txt --target es2022",
     "package:watch": "npm run package -- --watch",
     "test": "jest",
     "all": "pnpm run format:write && pnpm run lint && pnpm run test && pnpm run coverage && pnpm run package",
-    "start": "tsx src/index.mts"
+    "start": "node dist/index.js"
   },
   "license": "MIT",
   "jest": {
