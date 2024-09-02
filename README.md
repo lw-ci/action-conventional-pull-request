@@ -68,7 +68,8 @@ with:
   # - @commitlint/config-conventional
   base_config: '@commitlint/config-conventional'
 
-  # Configure path to a custom commitlint javascript config file within the repository
+  # Configure path to a custom commitlint
+  # config file within the repository.
   # This config will be loaded last and take the highest priority.
   # This file must export a commitlint config as the default export
   # Example: ./.github/commitlint.js
@@ -118,6 +119,8 @@ There are two events that can be used as triggers for this action, each with dif
 
 ## Outputs
 
+- `pr_title` - The title of the pull request
+- `pr_number`: The pull request number
 - `valid` - boolean as string to determine if the title is valid or not
 - `skipped` - boolean as string to determine if validation was skipped or not
 - `outcomes` - structured `Array<Outcome>` as JSON string of the validation feedback
@@ -141,9 +144,7 @@ There are two events that can be used as triggers for this action, each with dif
   };
   ```
 
-- `report` - The formatted report of the validation
-- `pr_title` - The title of the pull request
-- `pr_number`: The pull request number
+- `report` - The formatted string report of the validation outcomes
 
 [Outputs can be used in other steps](https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs), for example to comment the error message onto the pull request.
 
