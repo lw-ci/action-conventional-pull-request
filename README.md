@@ -192,7 +192,7 @@ jobs:
             ```
 
       # Delete a previous comment when the issue has been resolved
-      - if: ${{ steps.lint_pr_title.outputs.error_message == 'true' }}
+      - if: ${{ steps.lint_pr_title.outputs.valid == 'true' }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: pr-title-lint-error
