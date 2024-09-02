@@ -199,15 +199,15 @@ jobs:
           delete: true
 ````
 
-![sample comment](assets/sample-comment.png)
-
 </details>
 
-Inspired by:
-
-- https://github.com/amannn/action-semantic-pull-request
+![sample comment](assets/sample-comment.png)
 
 ## Tips
 
 - https://github.com/ccnnde/commitlint-config-git-commit-emoji/blob/master/index.js
 - https://github.com/ballcat-projects/commitlint-config-gitmoji/blob/master/index.js
+
+Inspirations for this action:
+
+- https://github.com/amannn/action-semantic-pull-request
