@@ -206,3 +206,8 @@ jobs:
 Inspired by:
 
 - https://github.com/amannn/action-semantic-pull-request
+
+## Tips
+
+- https://github.com/ccnnde/commitlint-config-git-commit-emoji/blob/master/index.js
+- https://github.com/ballcat-projects/commitlint-config-gitmoji/blob/master/index.js
