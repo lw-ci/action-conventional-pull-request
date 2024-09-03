@@ -62,24 +62,12 @@ Please see the useful links of commitlint to understand how to configure/overrid
 
 ```yml
 with:
-  # Configure a shared type to use as the base config
-  # Default: @commitlint/config-conventional
-  # Allowed:
-  # - @commitlint/config-conventional
-  base_config: '@commitlint/config-conventional'
-
   # Configure path to a custom commitlint
   # config file within the repository.
   # This config will be loaded last and take the highest priority.
   # This file must export a commitlint config as the default export
   # Example: ./.github/commitlint.js
   config_file: ''
-
-  # Configure a list of pull request labels where if found
-  # will disable PR Title validation (newline-delimited).
-  ignore_labels: |
-    bot
-    ignore-title-validation
 ```
 
 ## Custom commitlint rules
@@ -122,7 +110,6 @@ There are two events that can be used as triggers for this action, each with dif
 - `pr_title` - The title of the pull request
 - `pr_number`: The pull request number
 - `valid` - boolean as string to determine if the title is valid or not
-- `skipped` - boolean as string to determine if validation was skipped or not
 - `outcomes` - structured `Array<Outcome>` as JSON string of the validation feedback
 
   ```ts

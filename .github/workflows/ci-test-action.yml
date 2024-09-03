@@ -25,7 +25,6 @@ jobs:
 
       - name: Test Local Action
         id: test-action
-        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: ./

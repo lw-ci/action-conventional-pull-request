@@ -1,6 +1,8 @@
+import { RuleConfigSeverity, } from '@commitlint/types';
 import load from '@commitlint/load';
 import lint from '@commitlint/lint';
 import format from '@commitlint/format';
+import * as core from '@actions/core';
 function countOccurrences(inputString, targetSubstring) {
     if (!inputString || !targetSubstring)
         return 0;
@@ -10,10 +12,26 @@ function countOccurrences(inputString, targetSubstring) {
 }
 export async function lintTitle({ input }, config) {
     const CONFIG = {
-        extends: [config.baseConfig, config.configFile].filter(Boolean),
+        extends: [config.configFile].filter(Boolean),
     };
     const opts = await load(CONFIG);
     const customPlugins = opts.plugins ?? {};
+    const breakingHeaderPattern = /^(\w*)(?:\((.*)\))?!: (.*)$/;
+    const defaultParserOptions = {
+        parserOpts: {
+            headerPattern: /^(\w*)(?:\((.*)\))?!?: (.*)$/,
+            breakingHeaderPattern,
+            headerCorrespondence: ['type', 'scope', 'subject'],
+            noteKeywords: ['BREAKING CHANGE', 'BREAKING-CHANGE'],
+            revertPattern: /^(?:Revert|revert:)\s"?([\s\S]+?)"?\s*This reverts commit (\w*)\./i,
+            revertCorrespondence: ['header', 'hash'],
+            issuePrefixes: ['#'],
+        },
+    };
+    const parserOpts = {
+        ...defaultParserOptions.parserOpts,
+        ...(opts?.parserPreset?.parserOpts ?? {}),
+    };
     const lintOptions = {
         plugins: {
             'actions-conventional-pull-request': {
@@ -49,13 +67,52 @@ export async function lintTitle({ input }, config) {
             },
             ...customPlugins,
         },
-        parserOpts: opts.parserPreset ? opts.parserPreset.parserOpts : undefined,
+        parserOpts,
     };
-    const report = await lint(input, {
+    const rules = {
+        'body-leading-blank': [RuleConfigSeverity.Warning, 'always'],
+        'body-max-line-length': [RuleConfigSeverity.Error, 'always', 100],
+        'footer-leading-blank': [RuleConfigSeverity.Warning, 'always'],
+        'footer-max-line-length': [
+            RuleConfigSeverity.Error,
+            'always',
+            100,
+        ],
+        'header-max-length': [RuleConfigSeverity.Error, 'always', 100],
+        'header-trim': [RuleConfigSeverity.Error, 'always'],
+        'subject-case': [
+            RuleConfigSeverity.Error,
+            'never',
+            ['sentence-case', 'start-case', 'pascal-case', 'upper-case'],
+        ],
+        'subject-empty': [RuleConfigSeverity.Error, 'never'],
+        'subject-full-stop': [RuleConfigSeverity.Error, 'never', '.'],
+        'type-case': [RuleConfigSeverity.Error, 'always', 'lower-case'],
+        'type-empty': [RuleConfigSeverity.Error, 'never'],
+        'type-enum': [
+            RuleConfigSeverity.Error,
+            'always',
+            [
+                'build',
+                'chore',
+                'ci',
+                'docs',
+                'feat',
+                'fix',
+                'perf',
+                'refactor',
+                'revert',
+                'style',
+                'test',
+            ],
+        ],
         'duplicate-type-subject-start': [2, 'always'],
         'duplicate-commit-type': [2, 'always'],
         ...opts.rules,
-    }, lintOptions);
+    };
+    core.debug(JSON.stringify(rules, null, 2));
+    core.debug(JSON.stringify(lintOptions, null, 2));
+    const report = await lint(input, rules, lintOptions);
     return report;
 }
 export async function convertLintOutcomesToReportResults(outcomes) {

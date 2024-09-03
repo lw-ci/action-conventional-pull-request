@@ -11,7 +11,7 @@ import { parseConfig } from './helpers.js';
 export async function run(): Promise<void> {
   try {
     const config = parseConfig();
-    const { githubToken, ignoreLabels } = config;
+    const { githubToken } = config;
 
     const client = github.getOctokit(githubToken);
 
@@ -31,23 +31,10 @@ export async function run(): Promise<void> {
       pull_number: prContext.number,
     });
 
-    core.setOutput('skipped', 'true');
     core.setOutput('valid', 'true');
     core.setOutput('pr_title', pullRequest.title);
     core.setOutput('pr_number', pullRequest.number.toString());
 
-    if (ignoreLabels) {
-      const labelNames = pullRequest.labels.map((label) => label.name);
-      for (const labelName of labelNames) {
-        if (ignoreLabels.includes(labelName)) {
-          core.info(
-            `Validation was skipped because the PR label "${labelName}" was found.`,
-          );
-
-          return;
-        }
-      }
-    }
     const report = await lintTitle({ input: pullRequest.title }, config);
 
     const outcomes = [report];
@@ -57,7 +44,6 @@ export async function run(): Promise<void> {
     core.debug(JSON.stringify(report, null, 2));
     core.info(formattedReport);
 
-    core.setOutput('skipped', 'false');
     core.setOutput('valid', report.valid.toString());
     core.setOutput('outcomes', JSON.stringify(outcomes));
     core.setOutput('report', formattedReport);
