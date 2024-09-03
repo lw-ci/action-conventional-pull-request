@@ -33,7 +33,8 @@
     "lint": "bunx biome lint .",
     "check": "bunx biome check .",
     "check:write": "bunx biome check --write .",
-    "package": "tsc",
+    "package:copy-schema": "cp node_modules/@commitlint/config-validator/lib/commitlint.schema.json dist/commitlint.schema.json",
+    "package": "tsc && bun package:copy-schema",
     "package:watch": "bun run package -- --watch",
     "test": "bun test",
     "all": "bun run format:write && bun run lint && bun run test && bun run coverage && bun run package",
@@ -49,12 +50,10 @@
   "dependencies": {
     "@actions/core": "^1.10.1",
     "@actions/github": "^6.0.0",
-    "@commitlint/config-conventional": "^19.2.2",
     "@commitlint/format": "^19.3.0",
     "@commitlint/lint": "^19.2.2",
     "@commitlint/load": "^19.4.0",
-    "@commitlint/types": "^19.0.3",
-    "conventional-changelog-conventionalcommits": "^8.0.0"
+    "@commitlint/types": "^19.0.3"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",

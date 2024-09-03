@@ -7,24 +7,14 @@ branding:
   color: 'green'
 
 inputs:
-  base_config:
-    description: 'A supported shareable commitlint config'
-    required: false
-    default: '@commitlint/config-conventional'
   config_file:
     description: 'Path to a commitlint config file in the repository'
-    required: false
-    default: ''
-  ignore_labels:
-    description: 'a list of labels used to ignore validation'
     required: false
     default: ''
 
 outputs:
   valid:
     description: 'Boolean as string with response if the process was valid or not'
-  skipped:
-    description: 'Boolean as string with response if the process was skipped or not'
   outcomes:
     description: 'JSON array as string for the detailed outcomes of the validation '
   report:

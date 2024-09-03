@@ -12,8 +12,6 @@ export default {
     'subject-full-stop': [2, 'never', '.'],
     'type-case': [2, 'always', 'lower-case'],
     'type-empty': [2, 'never'],
-    'type-enum': [2, 'always', types],
-    'scope-enum': [2, 'always', scopes],
     'scope-case': [2, 'always', 'lower-case'],
     'duplicate-type-subject-start': [2, 'always'],
     'duplicate-commit-type': [2, 'always'],
