@@ -42,7 +42,7 @@ jobs:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
-      - uses: lwhiteley/action-conventional-pull-request@v1
+      - uses: lw-ci/action-conventional-pull-request@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -157,7 +157,7 @@ jobs:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
-      - uses: lwhiteley/action-conventional-pull-request@v1
+      - uses: lw-ci/action-conventional-pull-request@v2
         id: lint_pr_title
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
