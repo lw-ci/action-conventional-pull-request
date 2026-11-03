@@ -5,7 +5,6 @@
     "module": "Preserve",
     "rootDir": "./src",
     "moduleResolution": "Bundler",
-    "baseUrl": "./",
     "sourceMap": true,
     "outDir": "./dist",
     "noImplicitAny": true,
